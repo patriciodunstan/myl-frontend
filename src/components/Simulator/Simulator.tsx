@@ -1,4 +1,5 @@
-import { useDecks } from '../../hooks/useDecks';
+import { useEffect } from 'react';
+import { useDecks, useDeck } from '../../hooks/useDecks';
 import { useSimulation } from '../../hooks/useSimulation';
 import { useAppStore } from '../../stores/appStore';
 import { CardImage } from '../CardImage';
@@ -9,49 +10,53 @@ export function Simulator() {
   const simulationMutation = useSimulation();
   
   const simulator = useAppStore((state) => state.simulator);
+  const setSimulatorDeckId = useAppStore((state) => state.setSimulatorDeckId);
   const setSimulatorDeck = useAppStore((state) => state.setSimulatorDeck);
   const setSimulatorHand = useAppStore((state) => state.setSimulatorHand);
   const resetSimulatorState = useAppStore((state) => state.resetSimulator);
 
   const decks = decksData?.decks || [];
 
+  // Fetch full deck data when a deck is selected
+  const { data: fullDeck } = useDeck(simulator.selectedDeckId, simulator.selectedDeckId !== null);
+
+  // Sync full deck data to store when it loads
+  const deckCards = fullDeck?.cards || [];
+
   const handleDeckSelect = (deckId: string) => {
     if (!deckId) {
-      setSimulatorDeck(null);
+      setSimulatorDeckId(null);
       return;
     }
-
-    const deck = decks.find((d) => d.id === parseInt(deckId));
-    if (deck) {
-      // Create deck cards array for simulator
-      const deckCards = Array(60).fill(null).map((_, i) => ({
-        id: i,
-        card_id: deck.id,
-        quantity: 1,
-        deck_id: deck.id,
-        name: `Card ${i}`,
-        type_name: 'Aliado',
-        cost: Math.floor(Math.random() * 10),
-        damage: Math.floor(Math.random() * 5),
-        edition_id: 1,
-        edid: `${i}`,
-      } as any));
-
-      setSimulatorDeck(deckCards);
-      resetSimulatorState();
-    }
+    const id = parseInt(deckId);
+    setSimulatorDeckId(id);
   };
 
+  // Sync full deck data to store when it loads (in useEffect to avoid setState-during-render)
+  useEffect(() => {
+    if (fullDeck && simulator.selectedDeckId && (!simulator.deck || simulator.deck.id !== fullDeck.id)) {
+      setSimulatorDeck({
+        id: fullDeck.id,
+        name: fullDeck.name,
+        race: fullDeck.race,
+        format: fullDeck.format,
+        created_at: fullDeck.created_at,
+        updated_at: fullDeck.updated_at,
+        cards: fullDeck.cards as any[],
+        cards_count: fullDeck.cards?.length || 0,
+      });
+    }
+  }, [fullDeck, simulator.selectedDeckId, simulator.deck, setSimulatorDeck]);
+
   const handleDrawInitialHand = async () => {
-    if (!simulator.deck) {
+    if (!simulator.selectedDeckId) {
       alert('Selecciona un mazo primero');
       return;
     }
 
     try {
       const result = await simulationMutation.mutateAsync({
-        deck_id: simulator.deck.id,
-        draw_count: 7,
+        deck_id: simulator.selectedDeckId,
       });
       setSimulatorHand(result.hand || [], result.remaining || 0);
     } catch (error) {
@@ -60,7 +65,7 @@ export function Simulator() {
   };
 
   const handleDrawOneCard = async () => {
-    if (!simulator.deck) {
+    if (!simulator.selectedDeckId) {
       return;
     }
 
@@ -71,8 +76,7 @@ export function Simulator() {
 
     try {
       const result = await simulationMutation.mutateAsync({
-        deck_id: simulator.deck.id,
-        draw_count: 1,
+        deck_id: simulator.selectedDeckId,
       });
       setSimulatorHand(
         [...simulator.hand, ...(result.hand || [])],
@@ -88,11 +92,12 @@ export function Simulator() {
   };
 
   const calculateProbabilities = () => {
-    if (!simulator.deck) {
+    const cards = simulator.deck?.cards || deckCards;
+    if (!cards || cards.length === 0) {
       return { specific: 0, lowCost: 0, midCost: 0, highCost: 0 };
     }
 
-    const totalCards = simulator.deck.cards?.length || 0;
+    const totalCards = cards.reduce((sum: number, c: any) => sum + (c.quantity || 1), 0);
     const handSize = 7;
 
     // Calculate probabilities using hypergeometric distribution
@@ -113,9 +118,9 @@ export function Simulator() {
     };
 
     // Count cards by cost
-    const lowCostCount = simulator.deck.cards?.filter((c: any) => c.cost >= 0 && c.cost <= 2).length || 0;
-    const midCostCount = simulator.deck.cards?.filter((c: any) => c.cost >= 3 && c.cost <= 4).length || 0;
-    const highCostCount = simulator.deck.cards?.filter((c: any) => c.cost >= 5).length || 0;
+    const lowCostCount = cards.filter((c: any) => (c.cost ?? 0) >= 0 && (c.cost ?? 0) <= 2).length;
+    const midCostCount = cards.filter((c: any) => (c.cost ?? 0) >= 3 && (c.cost ?? 0) <= 4).length;
+    const highCostCount = cards.filter((c: any) => (c.cost ?? 0) >= 5).length;
 
     return {
       specific: getProbability(1), // Any specific card
@@ -126,15 +131,17 @@ export function Simulator() {
   };
 
   const probabilities = calculateProbabilities();
+  const manaCurveCards = simulator.deck?.cards || deckCards || [];
 
-  if (!simulator.deck) {
+  if (!simulator.selectedDeckId) {
     return (
-      <div className="simulator-container">
+      <div className="simulator-container" data-testid="simulator">
         <div className="simulator-controls">
           <div style={{ flex: 1, minWidth: '300px' }}>
             <label className="filter-label">Mazo</label>
             <select
               className="filter-select"
+              data-testid="simulator-deck-select"
               onChange={(e) => handleDeckSelect(e.target.value)}
             >
               <option value="">Seleccionar mazo...</option>
@@ -144,9 +151,9 @@ export function Simulator() {
             </select>
           </div>
           <div style={{ display: 'flex', gap: 'var(--spacing-3)', alignItems: 'flex-end' }}>
-            <button className="btn btn-primary" onClick={handleDrawInitialHand}>Robar 7</button>
-            <button className="btn btn-secondary" onClick={handleDrawOneCard}>+1</button>
-            <button className="btn btn-secondary" onClick={handleReset}>Reiniciar</button>
+            <button className="btn btn-primary" data-testid="simulate-button" onClick={handleDrawInitialHand}>Robar 7</button>
+            <button className="btn btn-secondary" data-testid="draw-one-button" onClick={handleDrawOneCard}>+1</button>
+            <button className="btn btn-secondary" data-testid="reset-simulator-button" onClick={handleReset}>Reiniciar</button>
           </div>
         </div>
 
@@ -162,13 +169,14 @@ export function Simulator() {
   }
 
   return (
-    <div className="simulator-container">
+    <div className="simulator-container" data-testid="simulator">
       <div className="simulator-controls">
         <div style={{ flex: 1, minWidth: '300px' }}>
           <label className="filter-label">Mazo</label>
           <select
             className="filter-select"
-            value={simulator.deck?.id ?? ''}
+            data-testid="simulator-deck-select"
+            value={simulator.selectedDeckId ?? ''}
             onChange={(e) => handleDeckSelect(e.target.value)}
           >
             <option value="">Seleccionar mazo...</option>
@@ -185,16 +193,17 @@ export function Simulator() {
       </div>
 
       <div className="simulator-display" style={{ display: 'grid' }}>
-        <div className="hand-display">
+        <div className="hand-display" data-testid="hand-area">
           <div className="hand-header">
             <h3 className="hand-title">Mano Inicial</h3>
             <span className="hand-info">Mazo: <span id="deck-remaining">{simulator.deckRemaining}</span> cartas restantes</span>
           </div>
-          <div id="hand-cards" className="hand-cards">
+          <div id="hand-cards" className="hand-cards" data-testid="hand-cards">
             {simulator.hand.map((card, index) => (
               <div
                 key={index}
                 className="hand-card"
+                data-testid="hand-card"
                 style={{ width: '120px', height: '168px' }}
               >
                 <CardImage
@@ -228,7 +237,7 @@ export function Simulator() {
               <span className="stat-value" id="high-cost-prob">{probabilities.highCost}%</span>
             </div>
           </div>
-          {simulator.deck && <ManaCurve cards={simulator.deck.cards || []} />}
+          {manaCurveCards.length > 0 && <ManaCurve cards={manaCurveCards} />}
         </div>
       </div>
     </div>
