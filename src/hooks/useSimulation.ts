@@ -4,6 +4,6 @@ import type { SimulationResponse, SimulationRequest } from '../types';
 
 export function useSimulation() {
   return useMutation<SimulationResponse, Error, SimulationRequest>({
-    mutationFn: (request: SimulationRequest) => simulateDraw(request.deck_id, request.draw_count),
+    mutationFn: (request: SimulationRequest) => simulateDraw(request.deck_id),
   });
 }
