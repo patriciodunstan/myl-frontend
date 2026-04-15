@@ -1,0 +1,32 @@
+server {
+    listen $PORT;
+    server_name localhost;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # API proxy to backend
+    location /api/ {
+        proxy_pass ${BACKEND_URL}/api/;
+        proxy_set_header Host $proxy_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_ssl_server_name on;
+    }
+
+    # Image proxy
+    location /images/ {
+        proxy_pass ${BACKEND_URL}/images/;
+        proxy_set_header Host $proxy_host;
+        proxy_ssl_server_name on;
+    }
+
+    # SPA fallback - all routes serve index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache static assets
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
