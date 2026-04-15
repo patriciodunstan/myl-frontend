@@ -14,8 +14,7 @@ export function DeckList() {
   } as Record<string, typeof currentDeck.cards>;
 
   currentDeck.cards.forEach((card) => {
-    // Simplified type check - in production we'd fetch full card details
-    const type = 'Aliado'; // Default to Aliado for now
+    const type = card.type_name || 'Otro';
     if (!grouped[type]) {
       grouped[type] = [];
     }
@@ -37,7 +36,7 @@ export function DeckList() {
 
   if (currentDeck.cards.length === 0) {
     return (
-      <div className="deck-list-container">
+      <div className="deck-list-container" data-testid="deck-list">
         <div className="deck-list-header">
           <span className="deck-list-title">Mazo Actual</span>
           <div className="deck-actions"></div>
@@ -54,7 +53,7 @@ export function DeckList() {
   }
 
   return (
-    <div className="deck-list-container">
+    <div className="deck-list-container" data-testid="deck-list">
       <div className="deck-list-header">
         <span className="deck-list-title">Mazo Actual</span>
         <div className="deck-actions">
@@ -89,7 +88,7 @@ export function DeckList() {
               >
                 <div className="deck-card-info">
                   <span className="deck-card-quantity">{deckCard.quantity}</span>
-                  <span className="deck-card-name">{deckCard.card_id}</span>
+                  <span className="deck-card-name">{deckCard.card_name || String(deckCard.card_id)}</span>
                 </div>
                 <div className="deck-card-actions">
                   <button

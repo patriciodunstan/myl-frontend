@@ -198,12 +198,22 @@ export interface CatalogFilters {
   sort: SortOption;
 }
 
+export interface CurrentDeckCard {
+  card_id: number;
+  quantity: number;
+  card_name?: string;
+  type_name?: string | null;
+  cost?: number | null;
+  edition_id?: number;
+  edid?: string;
+}
+
 export interface CurrentDeck {
   id: number | null;
   name: string;
   race: RaceOption;
   format: FormatOption;
-  cards: DeckCardsRequest[];
+  cards: CurrentDeckCard[];
 }
 
 export interface SimulatorState {
