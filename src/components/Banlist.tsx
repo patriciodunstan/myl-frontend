@@ -34,11 +34,12 @@ export function Banlist() {
   };
 
   return (
-    <div className="banlist-container">
+    <div className="banlist-container" data-testid="banlist">
       <div className="banlist-header">
         <h2 className="banlist-title">Lista de Prohibidos</h2>
         <select
           className="filter-select"
+          data-testid="banlist-format-select"
           value={format}
           onChange={handleFormatChange}
         >
@@ -54,7 +55,7 @@ export function Banlist() {
           <p className="loading-text">Cargando banlist...</p>
         </div>
       ) : (
-        <table className="banlist-table" id="banlist-table">
+        <table className="banlist-table" id="banlist-table" data-testid="banlist-table">
           <thead>
             <tr>
               <th>Carta</th>
@@ -63,7 +64,7 @@ export function Banlist() {
               <th>Límite</th>
             </tr>
           </thead>
-          <tbody id="banlist-tbody">
+          <tbody id="banlist-tbody" data-testid="banlist-list">
             {banlist.length === 0 ? (
               <tr>
                 <td colSpan={4} style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>
@@ -72,11 +73,11 @@ export function Banlist() {
               </tr>
             ) : (
               banlist.map((entry: any, index: number) => (
-                <tr key={index}>
+                <tr key={index} data-testid="banlist-item">
                   <td>{entry.card_name}</td>
                   <td>{entry.edition || '-'}</td>
                   <td>
-                    <span className={`banlist-status ${getStatusClass(entry.restriction)}`}>
+                    <span className={`banlist-status ${getStatusClass(entry.restriction)}`} data-testid="banlist-restriction">
                       {getStatusText(entry.restriction)}
                     </span>
                   </td>

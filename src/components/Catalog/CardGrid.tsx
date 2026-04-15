@@ -48,11 +48,12 @@ export function CardGrid({ cards, currentPage, totalPages, onPageChange }: CardG
 
   return (
     <>
-      <div className="cards-grid">
+      <div className="cards-grid" data-testid="card-grid">
         {cards.map((card) => (
           <div
             key={card.id}
             className="card-item"
+            data-testid="card-item"
             onClick={() => handleCardClick(card)}
           >
             <div className="card-image-container">

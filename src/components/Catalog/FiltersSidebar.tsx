@@ -58,7 +58,7 @@ export function FiltersSidebar({ filters, onFiltersChange, onReset, isCollapsed 
   };
 
   return (
-    <aside className={`filters-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+    <aside className={`filters-sidebar ${isCollapsed ? 'collapsed' : ''}`} data-testid="filters-sidebar">
       <div className="filters-header">
         <span className="filters-title">Filtros</span>
         <button className="filters-toggle">▼</button>
@@ -68,6 +68,7 @@ export function FiltersSidebar({ filters, onFiltersChange, onReset, isCollapsed 
           <label className="filter-label">Raza</label>
           <select
             className="filter-select"
+            data-testid="filter-race"
             value={filters.race}
             onChange={(e) => handleFilterChange('race', e.target.value)}
           >
@@ -83,6 +84,7 @@ export function FiltersSidebar({ filters, onFiltersChange, onReset, isCollapsed 
           <label className="filter-label">Tipo</label>
           <select
             className="filter-select"
+            data-testid="filter-type"
             value={filters.type}
             onChange={(e) => handleFilterChange('type', e.target.value)}
           >
@@ -98,6 +100,7 @@ export function FiltersSidebar({ filters, onFiltersChange, onReset, isCollapsed 
           <label className="filter-label">Rareza</label>
           <select
             className="filter-select"
+            data-testid="filter-rarity"
             value={filters.rarity}
             onChange={(e) => handleFilterChange('rarity', e.target.value)}
           >
@@ -115,6 +118,7 @@ export function FiltersSidebar({ filters, onFiltersChange, onReset, isCollapsed 
             <input
               type="number"
               className="range-input"
+              data-testid="filter-cost-min"
               placeholder="0"
               min="0"
               max="12"
@@ -125,11 +129,39 @@ export function FiltersSidebar({ filters, onFiltersChange, onReset, isCollapsed 
             <input
               type="number"
               className="range-input"
+              data-testid="filter-cost-max"
               placeholder="12"
               min="0"
               max="12"
               value={filters.costMax ?? ''}
               onChange={(e) => handleRangeChange('costMax', e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="filter-group">
+          <label className="filter-label">Daño/Poder</label>
+          <div className="range-filter">
+            <input
+              type="number"
+              className="range-input"
+              data-testid="filter-damage-min"
+              placeholder="0"
+              min="0"
+              max="12"
+              value={filters.powerMin ?? ''}
+              onChange={(e) => handleRangeChange('powerMin', e.target.value)}
+            />
+            <span>-</span>
+            <input
+              type="number"
+              className="range-input"
+              data-testid="filter-damage-max"
+              placeholder="12"
+              min="0"
+              max="12"
+              value={filters.powerMax ?? ''}
+              onChange={(e) => handleRangeChange('powerMax', e.target.value)}
             />
           </div>
         </div>

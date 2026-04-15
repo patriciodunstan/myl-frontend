@@ -16,7 +16,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
   }
 
   return (
-    <div className="pagination">
+    <div className="pagination" data-testid="pagination">
       <span className="pagination-info">
         Página <span id="current-page">{currentPage}</span> de{' '}
         <span id="total-pages">{totalPages}</span>
@@ -24,6 +24,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       <div className="pagination-controls">
         <button
           className="pagination-btn"
+          data-testid="pagination-prev"
           disabled={currentPage === 1}
           onClick={() => handlePageChange(currentPage - 1)}
         >
@@ -40,6 +41,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
         ))}
         <button
           className="pagination-btn"
+          data-testid="pagination-next"
           disabled={currentPage === totalPages}
           onClick={() => handlePageChange(currentPage + 1)}
         >

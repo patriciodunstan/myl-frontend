@@ -35,9 +35,9 @@ export function CardModal({ card, onClose }: CardModalProps) {
   const printings = card.printings || [];
 
   return (
-    <div className="modal-backdrop active" onClick={handleBackdropClick}>
+    <div className="modal-backdrop active" data-testid="card-modal" onClick={handleBackdropClick}>
       <div className="modal">
-        <button className="modal-close" onClick={onClose}>&times;</button>
+        <button className="modal-close" data-testid="modal-close" onClick={onClose}>&times;</button>
         <div className="modal-content">
           <div className="card-detail">
             <div className="card-detail-image">

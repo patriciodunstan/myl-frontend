@@ -46,7 +46,7 @@ export function Contact() {
   };
 
   return (
-    <div className="banlist-container">
+    <div className="banlist-container" data-testid="contact">
       <div className="banlist-header">
         <h2 className="banlist-title">Contacto & Sugerencias</h2>
       </div>
@@ -76,6 +76,7 @@ export function Contact() {
             placeholder="Tu nombre"
             required
             name="nombre"
+            data-testid="contact-name"
             value={formData.nombre}
             onChange={handleInputChange}
             style={{
@@ -102,6 +103,7 @@ export function Contact() {
             type="email"
             placeholder="tucorreo@ejemplo.com"
             name="email"
+            data-testid="contact-email"
             value={formData.email}
             onChange={handleInputChange}
             style={{
@@ -126,6 +128,7 @@ export function Contact() {
           <select
             id="contacto-tipo"
             name="tipo"
+            data-testid="contact-type"
             value={formData.tipo}
             onChange={handleInputChange}
             style={{
@@ -158,6 +161,7 @@ export function Contact() {
             placeholder="Escribí tu mensaje acá..."
             required
             name="mensaje"
+            data-testid="contact-message"
             value={formData.mensaje}
             onChange={handleInputChange}
             style={{
@@ -177,6 +181,7 @@ export function Contact() {
           <button
             id="contacto-submit"
             type="submit"
+            data-testid="contact-submit"
             disabled={isSubmitting}
             style={{
               background: 'var(--color-accent)',
@@ -196,6 +201,7 @@ export function Contact() {
         {feedback.show && (
           <div
             id="contacto-feedback"
+            data-testid="contact-feedback"
             style={{
               display: 'block',
               padding: 'var(--spacing-3) var(--spacing-4)',
