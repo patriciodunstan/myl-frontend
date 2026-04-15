@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useCards } from './hooks/useCards';
 import { useAppStore } from './stores/appStore';
 import { Layout } from './components/Layout';
+import { FiltersSidebar } from './components/Catalog/FiltersSidebar';
 import { CardGrid } from './components/Catalog/CardGrid';
 import { DeckBuilder } from './components/DeckBuilder/DeckBuilder';
 import { Simulator } from './components/Simulator/Simulator';
@@ -10,8 +11,9 @@ import { Contact } from './components/Contact';
 
 function App() {
   const activeTab = useAppStore((state) => state.activeTab);
-  const setActiveTab = useAppStore((state) => state.setActiveTab);
   const catalogFilters = useAppStore((state) => state.catalogFilters);
+  const setCatalogFilters  = useAppStore((state) => state.setCatalogFilters);
+  const resetCatalogFilters = useAppStore((state) => state.resetCatalogFilters);
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -29,36 +31,32 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    // Handle tab switching
-    const handleTabClick = (e: Event) => {
-      const target = e.currentTarget as HTMLElement;
-      const tabElement = target.closest('.nav-tab') as HTMLElement | null;
-      const tabName = tabElement?.dataset.tab as string || 'catalog';
+  const handleFiltersChange = (filters: Partial<typeof catalogFilters>) => {
+    setCatalogFilters(filters);
+    setCurrentPage(1);
+  };
 
-      setActiveTab(tabName as any);
-    };
-
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-      tab.addEventListener('click', handleTabClick);
-    });
-
-    return () => {
-      document.querySelectorAll('.nav-tab').forEach(tab => {
-        tab.removeEventListener('click', handleTabClick);
-      });
-    };
-  }, []);
+  const handleFiltersReset = () => {
+    resetCatalogFilters();
+    setCurrentPage(1);
+  };
 
   return (
     <Layout>
       {activeTab === 'catalog' && (
-        <CardGrid
-          cards={cards}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
+        <div className="catalog-container">
+          <FiltersSidebar
+            filters={catalogFilters}
+            onFiltersChange={handleFiltersChange}
+            onReset={handleFiltersReset}
+          />
+          <CardGrid
+            cards={cards}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
       )}
       {activeTab === 'deckbuilder' && <DeckBuilder />}
       {activeTab === 'simulator' && <Simulator />}

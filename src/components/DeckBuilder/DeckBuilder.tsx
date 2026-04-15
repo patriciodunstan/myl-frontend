@@ -8,6 +8,7 @@ import { DeckSearch } from './DeckSearch';
 
 export function DeckBuilder() {
   const [isLoadingDeck, setIsLoadingDeck] = useState(false);
+  const [mobilePanel, setMobilePanel] = useState<'mazo' | 'buscar'>('mazo');
   const queryClient = useQueryClient();
   const { data: decksData } = useDecks();
   const createDeckMutation = useCreateDeck();
@@ -127,7 +128,23 @@ export function DeckBuilder() {
 
   return (
     <div className="deck-builder-container" data-testid="deck-builder">
-      <div className="deck-sidebar">
+      {/* Nav solo visible en mobile/tablet */}
+      <div className="deck-mobile-nav">
+        <button
+          className={`deck-mobile-nav-btn${mobilePanel === 'mazo' ? ' active' : ''}`}
+          onClick={() => setMobilePanel('mazo')}
+        >
+          Mazo {totalCards > 0 ? `(${totalCards})` : ''}
+        </button>
+        <button
+          className={`deck-mobile-nav-btn${mobilePanel === 'buscar' ? ' active' : ''}`}
+          onClick={() => setMobilePanel('buscar')}
+        >
+          Buscar cartas
+        </button>
+      </div>
+
+      <div className={`deck-sidebar${mobilePanel === 'buscar' ? ' deck-panel-hidden' : ''}`}>
         <div className="deck-selector">
           <div className="deck-selector-header">
             <span className="deck-selector-title">Mazos</span>
@@ -229,7 +246,9 @@ export function DeckBuilder() {
         <DeckList />
       </div>
 
-      <DeckSearch />
+      <div className={mobilePanel === 'mazo' ? 'deck-panel-hidden' : ''}>
+        <DeckSearch />
+      </div>
     </div>
   );
 }
