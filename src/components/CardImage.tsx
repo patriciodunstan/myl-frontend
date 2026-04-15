@@ -4,7 +4,8 @@ import type { CardImageProps } from '../types';
 export function CardImage({ editionId, edid, alt, className = '', loading = 'lazy' }: CardImageProps) {
   const [imageError, setImageError] = useState(false);
 
-  const imageUrl = `/images/${editionId}/${edid}.png`;
+  const hasValidImage = editionId && edid;
+  const imageUrl = hasValidImage ? `/images/${editionId}/${edid}.png` : '';
   const fallbackSvg = `data:image/svg+xml,${encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" width="200" height="280" viewBox="0 0 200 280">
       <rect width="200" height="280" fill="#1a1a2e"/>
@@ -17,6 +18,17 @@ export function CardImage({ editionId, edid, alt, className = '', loading = 'laz
   const handleError = () => {
     setImageError(true);
   };
+
+  if (!hasValidImage) {
+    return (
+      <img
+        src={fallbackSvg}
+        alt={alt}
+        className={className}
+        loading={loading}
+      />
+    );
+  }
 
   return (
     <img
