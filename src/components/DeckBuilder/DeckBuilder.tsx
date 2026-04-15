@@ -1,54 +1,64 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useDecks, useCreateDeck, useUpdateDeck, useValidateDeck } from '../../hooks/useDecks';
+import { getDeck } from '../../api/decks';
 import { useAppStore } from '../../stores/appStore';
 import { DeckList } from './DeckList';
 import { DeckSearch } from './DeckSearch';
 
 export function DeckBuilder() {
+  const [isLoadingDeck, setIsLoadingDeck] = useState(false);
+  const queryClient = useQueryClient();
   const { data: decksData } = useDecks();
   const createDeckMutation = useCreateDeck();
   const updateDeckMutation = useUpdateDeck();
   const validateDeckMutation = useValidateDeck();
-  
+
   const currentDeck = useAppStore((state) => state.currentDeck);
   const setCurrentDeck = useAppStore((state) => state.setCurrentDeck);
   const resetCurrentDeck = useAppStore((state) => state.resetCurrentDeck);
 
   const decks = decksData?.decks || [];
 
-  useEffect(() => {
-    if (currentDeck.id && decks.length > 0) {
-      const deck = decks.find((d) => d.id === currentDeck.id);
-      if (deck) {
-        setCurrentDeck({
-          ...currentDeck,
-          name: deck.name,
-          race: deck.race as any || '',
-          format: deck.format as any || 'racial_edicion',
-        });
-      }
-    }
-  }, [currentDeck.id, decks, setCurrentDeck]);
-
   const handleNewDeck = () => {
     resetCurrentDeck();
   };
 
-  const handleDeckSelect = (deckId: string) => {
+  const handleDeckSelect = async (deckId: string) => {
     if (!deckId) {
       resetCurrentDeck();
       return;
     }
 
     const deck = decks.find((d) => d.id === parseInt(deckId));
-    if (deck) {
-      setCurrentDeck({
-        id: deck.id,
-        name: deck.name,
-        race: deck.race as any || '',
-        format: deck.format as any || 'racial_edicion',
-        cards: [],
+    if (!deck) return;
+
+    setIsLoadingDeck(true);
+    try {
+      const deckData = await queryClient.fetchQuery({
+        queryKey: ['deck', deck.id],
+        queryFn: () => getDeck(deck.id),
+        staleTime: 5 * 60 * 1000,
       });
+      setCurrentDeck({
+        id: deckData.id,
+        name: deckData.name,
+        race: (deckData.race as any) || '',
+        format: (deckData.format as any) || 'racial_edicion',
+        cards: deckData.cards.map((card) => ({
+          card_id: card.card_id,
+          quantity: card.quantity,
+          card_name: card.name,
+          type_name: card.type_name,
+          cost: card.cost,
+          edition_id: card.edition_id,
+          edid: card.edid,
+        })),
+      });
+    } catch {
+      alert('Error al cargar el mazo');
+    } finally {
+      setIsLoadingDeck(false);
     }
   };
 
@@ -116,18 +126,19 @@ export function DeckBuilder() {
   const allyCards = currentDeck.cards.reduce((sum, card) => sum + card.quantity, 0);
 
   return (
-    <div className="deck-builder-container">
+    <div className="deck-builder-container" data-testid="deck-builder">
       <div className="deck-sidebar">
         <div className="deck-selector">
           <div className="deck-selector-header">
             <span className="deck-selector-title">Mazos</span>
-            <button className="btn btn-primary btn-sm" onClick={handleNewDeck}>
+            <button className="btn btn-primary btn-sm" data-testid="create-deck-button" onClick={handleNewDeck}>
               + Nuevo
             </button>
           </div>
           <select
             className="filter-select"
             value={currentDeck.id ?? ''}
+            disabled={isLoadingDeck}
             onChange={(e) => handleDeckSelect(e.target.value)}
           >
             <option value="">Seleccionar mazo...</option>
@@ -206,10 +217,10 @@ export function DeckBuilder() {
           </div>
 
           <div className="filter-actions" style={{ marginTop: 'var(--spacing-4)' }}>
-            <button className="btn btn-secondary btn-sm" onClick={handleValidateDeck}>
+            <button className="btn btn-secondary btn-sm" data-testid="deck-validate-button" onClick={handleValidateDeck}>
               Validar
             </button>
-            <button className="btn btn-primary btn-sm" onClick={handleSaveDeck}>
+            <button className="btn btn-primary btn-sm" data-testid="deck-save-button" onClick={handleSaveDeck}>
               Guardar
             </button>
           </div>
