@@ -5,6 +5,7 @@ import type {
   CatalogFilters,
   SimulatorState,
   Card,
+  DeckSummary,
 } from '../types';
 
 interface AppStore {
@@ -24,7 +25,8 @@ interface AppStore {
   resetCatalogFilters: () => void;
   setCurrentDeck: (deck: CurrentDeck) => void;
   resetCurrentDeck: () => void;
-  setSimulatorDeck: (deck: Card[] | null) => void;
+  setSimulatorDeckId: (deckId: number | null) => void;
+  setSimulatorDeck: (deck: DeckSummary | null) => void;
   setSimulatorHand: (hand: Card[], remaining: number) => void;
   resetSimulator: () => void;
 }
@@ -51,6 +53,7 @@ const initialCurrentDeck: CurrentDeck = {
 };
 
 const initialSimulatorState: SimulatorState = {
+  selectedDeckId: null,
   deck: null,
   hand: [],
   deckRemaining: 0,
@@ -75,22 +78,22 @@ export const useAppStore = create<AppStore>((set) => ({
   resetCurrentDeck: () => set({ currentDeck: { ...initialCurrentDeck } }),
 
   // Simulator actions
-  setSimulatorDeck: (deckCards) => set((state) => ({
+  setSimulatorDeckId: (deckId) => set((state) => ({
     simulator: {
       ...state.simulator,
-      deck: deckCards
-        ? {
-            id: 0,
-            name: 'Simulator Deck',
-            race: '',
-            format: '',
-            created_at: '',
-            updated_at: '',
-            cards_count: deckCards.length,
-            ally_count: deckCards.filter((c) => c.type_name === 'Aliado').length,
-          }
-        : null,
-      deckRemaining: deckCards ? deckCards.reduce((sum, c) => sum + (c.quantity || 0), 0) : 0,
+      selectedDeckId: deckId,
+      deck: null,
+      hand: [],
+      deckRemaining: 0,
+    },
+  })),
+  setSimulatorDeck: (deck) => set((state) => ({
+    simulator: {
+      ...state.simulator,
+      deck,
+      deckRemaining: deck
+        ? (deck.cards?.reduce((sum, c) => sum + ((c as any).quantity || 1), 0) || deck.cards_count || 0)
+        : 0,
     },
   })),
   setSimulatorHand: (hand, remaining) => set((state) => ({
@@ -105,7 +108,7 @@ export const useAppStore = create<AppStore>((set) => ({
       ...state.simulator,
       hand: [],
       deckRemaining: state.simulator.deck
-        ? state.simulator.deck.cards_count || 0
+        ? (state.simulator.deck.cards?.reduce((sum, c) => sum + ((c as any).quantity || 1), 0) || state.simulator.deck.cards_count || 0)
         : 0,
     },
   })),

@@ -134,7 +134,6 @@ export interface ContactResponse {
 
 export interface SimulationRequest {
   deck_id: number;
-  draw_count: number;
 }
 
 export interface SimulationResponse {
@@ -217,6 +216,7 @@ export interface CurrentDeck {
 }
 
 export interface SimulatorState {
+  selectedDeckId: number | null;
   deck: DeckSummary | null;
   hand: Card[];
   deckRemaining: number;
