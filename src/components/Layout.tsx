@@ -10,6 +10,7 @@ const NAV_TABS = [
   { id: 'deckbuilder',  label: 'Constructor'  },
   { id: 'simulator',    label: 'Simulador'    },
   { id: 'banlist',      label: 'Banlist'      },
+  { id: 'asesor',       label: 'Asesor'       },
   { id: 'contacto',     label: 'Contacto'     },
 ] as const;
 

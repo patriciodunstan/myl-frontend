@@ -151,7 +151,7 @@ export interface StatsResponse {
 // STATE & FILTER TYPES
 // ========================================
 
-export type Tab = 'catalog' | 'deckbuilder' | 'simulator' | 'banlist' | 'contacto';
+export type Tab = 'catalog' | 'deckbuilder' | 'simulator' | 'banlist' | 'asesor' | 'contacto';
 
 export type RaceOption =
   | ''
@@ -244,7 +244,9 @@ export interface CardImageProps {
 export interface PaginationProps {
   currentPage: number;
   totalPages: number;
+  perPage: number;
   onPageChange: (page: number) => void;
+  onPerPageChange: (perPage: number) => void;
 }
 
 export interface ModalProps {

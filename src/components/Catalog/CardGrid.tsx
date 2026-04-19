@@ -8,10 +8,12 @@ interface CardGridProps {
   cards: Card[];
   currentPage: number;
   totalPages: number;
+  perPage: number;
   onPageChange: (page: number) => void;
+  onPerPageChange: (perPage: number) => void;
 }
 
-export function CardGrid({ cards, currentPage, totalPages, onPageChange }: CardGridProps) {
+export function CardGrid({ cards, currentPage, totalPages, perPage, onPageChange, onPerPageChange }: CardGridProps) {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   const getTypeClass = (typeName: string | null): string => {
@@ -86,7 +88,9 @@ export function CardGrid({ cards, currentPage, totalPages, onPageChange }: CardG
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
+          perPage={perPage}
           onPageChange={onPageChange}
+          onPerPageChange={onPerPageChange}
         />
       )}
 

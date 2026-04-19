@@ -12,6 +12,7 @@ interface AppStore {
   // Catalog state
   activeTab: Tab;
   catalogFilters: CatalogFilters;
+  perPage: number;
 
   // Deck builder state
   currentDeck: CurrentDeck;
@@ -23,6 +24,7 @@ interface AppStore {
   setActiveTab: (tab: Tab) => void;
   setCatalogFilters: (filters: Partial<CatalogFilters>) => void;
   resetCatalogFilters: () => void;
+  setPerPage: (perPage: number) => void;
   setCurrentDeck: (deck: CurrentDeck) => void;
   resetCurrentDeck: () => void;
   setSimulatorDeckId: (deckId: number | null) => void;
@@ -59,10 +61,15 @@ const initialSimulatorState: SimulatorState = {
   deckRemaining: 0,
 };
 
+const DEFAULT_PER_PAGE = 24;
+const savedPerPage = localStorage.getItem('myl-per-page');
+const initialPerPage = savedPerPage ? parseInt(savedPerPage, 10) : DEFAULT_PER_PAGE;
+
 export const useAppStore = create<AppStore>((set) => ({
   // Initial state
   activeTab: 'catalog',
   catalogFilters: { ...initialCatalogFilters },
+  perPage: initialPerPage,
   currentDeck: { ...initialCurrentDeck },
   simulator: { ...initialSimulatorState },
 
@@ -72,6 +79,10 @@ export const useAppStore = create<AppStore>((set) => ({
     catalogFilters: { ...state.catalogFilters, ...filters },
   })),
   resetCatalogFilters: () => set({ catalogFilters: { ...initialCatalogFilters } }),
+  setPerPage: (perPage) => {
+    localStorage.setItem('myl-per-page', String(perPage));
+    set({ perPage });
+  },
 
   // Deck builder actions
   setCurrentDeck: (deck) => set({ currentDeck: deck }),

@@ -1,6 +1,8 @@
 import type { PaginationProps } from '../../types';
 
-export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
+const PAGE_SIZE_OPTIONS = [12, 24, 48, 96, 200];
+
+export function Pagination({ currentPage, totalPages, perPage, onPageChange, onPerPageChange }: PaginationProps) {
   const startPage = Math.max(1, currentPage - 2);
   const endPage = Math.min(totalPages, currentPage + 2);
 
@@ -10,6 +12,12 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
     }
   };
 
+  const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newPerPage = parseInt(e.target.value, 10);
+    onPerPageChange(newPerPage);
+    onPageChange(1);
+  };
+
   const pages = [];
   for (let i = startPage; i <= endPage; i++) {
     pages.push(i);
@@ -17,6 +25,20 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
 
   return (
     <div className="pagination" data-testid="pagination">
+      <div className="pagination-size">
+        <span className="pagination-size-label">Mostrar:</span>
+        <select
+          value={perPage}
+          onChange={handlePerPageChange}
+          data-testid="page-size-select"
+        >
+          {PAGE_SIZE_OPTIONS.map((size) => (
+            <option key={size} value={size}>
+              {size} por página
+            </option>
+          ))}
+        </select>
+      </div>
       <span className="pagination-info">
         Página <span id="current-page">{currentPage}</span> de{' '}
         <span id="total-pages">{totalPages}</span>

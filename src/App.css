@@ -702,6 +702,36 @@ body {
     box-shadow: 0 0 10px rgba(233, 69, 96, 0.3);
 }
 
+.pagination-size {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-right: var(--spacing-4);
+}
+
+.pagination-size-label {
+    font-size: var(--font-size-small);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+}
+
+.pagination-size select {
+    padding: var(--spacing-2) var(--spacing-3);
+    background: var(--color-secondary);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-small);
+    font-family: var(--font-family-body);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.pagination-size select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
 /* Loading State */
 .loading-state {
     display: flex;

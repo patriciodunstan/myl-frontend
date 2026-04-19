@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* Base reset — App.css maneja el diseño completo */
 *, *::before, *::after {
   box-sizing: border-box;
