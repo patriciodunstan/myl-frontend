@@ -4,14 +4,6 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
-    # Advisor API proxy (more specific path, matched before /api/)
-    location /api/advisor/ {
-        proxy_pass ${ADVISOR_URL}/api/advisor/;
-        proxy_set_header Host $proxy_host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_ssl_server_name on;
-    }
-
     # API proxy to backend
     location /api/ {
         proxy_pass ${BACKEND_URL}/api/;

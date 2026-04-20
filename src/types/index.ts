@@ -151,7 +151,7 @@ export interface StatsResponse {
 // STATE & FILTER TYPES
 // ========================================
 
-export type Tab = 'catalog' | 'deckbuilder' | 'simulator' | 'banlist' | 'asesor' | 'contacto';
+export type Tab = 'catalog' | 'deckbuilder' | 'simulator' | 'banlist' | 'contacto';
 
 export type RaceOption =
   | ''

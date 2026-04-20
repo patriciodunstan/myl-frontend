@@ -7,7 +7,6 @@ import { CardGrid } from './components/Catalog/CardGrid';
 import { DeckBuilder } from './components/DeckBuilder/DeckBuilder';
 import { Simulator } from './components/Simulator/Simulator';
 import { Banlist } from './components/Banlist';
-import { Asesor } from './components/Asesor/Asesor';
 import { Contact } from './components/Contact';
 
 function App() {
@@ -71,7 +70,6 @@ function App() {
       {activeTab === 'deckbuilder' && <DeckBuilder />}
       {activeTab === 'simulator' && <Simulator />}
       {activeTab === 'banlist' && <Banlist />}
-      {activeTab === 'asesor' && <Asesor />}
       {activeTab === 'contacto' && <Contact />}
     </Layout>
   );
