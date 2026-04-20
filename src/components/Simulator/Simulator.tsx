@@ -42,6 +42,7 @@ export function Simulator() {
         format: fullDeck.format,
         created_at: fullDeck.created_at,
         updated_at: fullDeck.updated_at,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         cards: fullDeck.cards as any[],
         cards_count: fullDeck.cards?.length || 0,
       });
@@ -59,7 +60,7 @@ export function Simulator() {
         deck_id: simulator.selectedDeckId,
       });
       setSimulatorHand(result.hand || [], result.remaining || 0);
-    } catch (error) {
+    } catch {
       alert('Error al simular el robo');
     }
   };
@@ -82,7 +83,7 @@ export function Simulator() {
         [...simulator.hand, ...(result.hand || [])],
         result.remaining || simulator.deckRemaining - 1
       );
-    } catch (error) {
+    } catch {
       alert('Error al simular el robo');
     }
   };
@@ -96,7 +97,7 @@ export function Simulator() {
     if (!cards || cards.length === 0) {
       return { specific: 0, lowCost: 0, midCost: 0, highCost: 0 };
     }
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const totalCards = cards.reduce((sum: number, c: any) => sum + (c.quantity || 1), 0);
     const handSize = 7;
 
@@ -118,8 +119,11 @@ export function Simulator() {
     };
 
     // Count cards by cost
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lowCostCount = cards.filter((c: any) => (c.cost ?? 0) >= 0 && (c.cost ?? 0) <= 2).length;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const midCostCount = cards.filter((c: any) => (c.cost ?? 0) >= 3 && (c.cost ?? 0) <= 4).length;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const highCostCount = cards.filter((c: any) => (c.cost ?? 0) >= 5).length;
 
     return {

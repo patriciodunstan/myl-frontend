@@ -1,4 +1,4 @@
-import type { Page, APIRequestContext, APIResponse } from '@playwright/test';
+import type { Page, APIResponse } from '@playwright/test';
 
 export class APIHelper {
   constructor(private page: Page) {}
@@ -17,6 +17,7 @@ export class APIHelper {
     return this.page.waitForResponse(urlPattern);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async mockAPIResponse(urlPattern: string | RegExp, data: any): Promise<void> {
     await this.page.route(urlPattern, (route) => {
       route.fulfill({
