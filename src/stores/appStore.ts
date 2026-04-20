@@ -103,6 +103,7 @@ export const useAppStore = create<AppStore>((set) => ({
       ...state.simulator,
       deck,
       deckRemaining: deck
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ? (deck.cards?.reduce((sum, c) => sum + ((c as any).quantity || 1), 0) || deck.cards_count || 0)
         : 0,
     },
@@ -119,6 +120,7 @@ export const useAppStore = create<AppStore>((set) => ({
       ...state.simulator,
       hand: [],
       deckRemaining: state.simulator.deck
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ? (state.simulator.deck.cards?.reduce((sum, c) => sum + ((c as any).quantity || 1), 0) || state.simulator.deck.cards_count || 0)
         : 0,
     },

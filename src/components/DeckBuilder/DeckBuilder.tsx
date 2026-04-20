@@ -44,7 +44,9 @@ export function DeckBuilder() {
       setCurrentDeck({
         id: deckData.id,
         name: deckData.name,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         race: (deckData.race as any) || '',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         format: (deckData.format as any) || 'racial_edicion',
         cards: deckData.cards.map((card) => ({
           card_id: card.card_id,
@@ -93,7 +95,7 @@ export function DeckBuilder() {
         });
       }
       alert('Mazo guardado correctamente');
-    } catch (error) {
+    } catch {
       alert('Error al guardar el mazo');
     }
   };
@@ -111,7 +113,7 @@ export function DeckBuilder() {
       } else {
         alert(`Errores:\n${result.errors.join('\n')}\n\nAdvertencias:\n${result.warnings.join('\n')}`);
       }
-    } catch (error) {
+    } catch {
       alert('Error al validar el mazo');
     }
   };

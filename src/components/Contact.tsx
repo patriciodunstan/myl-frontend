@@ -29,6 +29,7 @@ export function Contact() {
         isError: false,
       });
       setFormData({ nombre: '', email: '', tipo: 'Sugerencia', mensaje: '' });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setFeedback({
         show: true,

@@ -72,6 +72,7 @@ export function Banlist() {
                 </td>
               </tr>
             ) : (
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               banlist.map((entry: any, index: number) => (
                 <tr key={index} data-testid="banlist-item">
                   <td>{entry.card_name}</td>
